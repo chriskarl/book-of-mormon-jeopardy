@@ -2,7 +2,7 @@
 
 A browser-based Jeopardy-style trivia game for Family Home Evening, youth activities, firesides, or any gathering where folks want to test their knowledge of the Book of Mormon.
 
-**Live:** https://bom-jeopardy.netlify.app *(pending first deploy — see below)*
+**Live:** https://bom-jeopardy.netlify.app
 
 Companion to [Your March](https://peppy-squirrel-88ede7.netlify.app), the 100-day Book of Mormon reading challenge. Same visual family, same spirit.
 
