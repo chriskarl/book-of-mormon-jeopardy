@@ -1,0 +1,1121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Book of Mormon Jeopardy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --background: #18130e;
+  --foreground: #ddd0b8;
+  --card: #1f1914;
+  --primary: #d4692a;
+  --sand: #e6ddd0;
+  --sand-foreground: #2a2117;
+  --gold: #c8981a;
+  --stone: #3a3128;
+  --terracotta: #9c3a22;
+  --jade: #2a6e5e;
+  --muted: #262019;
+  --muted-foreground: #8a7d6b;
+  --border: #302821;
+  --radius: 14px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+  --team-1: #c8981a;
+  --team-2: #2a6e5e;
+  --team-3: #8a6240;
+  --team-4: #d4692a;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Source Serif 4', Georgia, serif;
+  line-height: 1.7;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .oswald { font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+
+.app { max-width: 1600px; margin: 0 auto; padding: 1.5rem 1.5rem 2rem; }
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.brand {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: var(--foreground);
+  line-height: 1.05;
+}
+.brand .sub { display: block; font-size: 0.55em; color: var(--primary); letter-spacing: 0.16em; margin-top: 0.25rem; }
+
+.controls { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+button, .btn {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.9rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+button:hover, .btn:hover { border-color: var(--primary); color: var(--primary); }
+button:active { transform: translateY(1px); }
+button.primary { background: var(--primary); border-color: var(--primary); color: var(--background); }
+button.primary:hover { background: #e07730; border-color: #e07730; color: var(--background); }
+button.jade { background: var(--jade); border-color: var(--jade); color: var(--foreground); }
+button.jade:hover { background: #348a75; border-color: #348a75; color: var(--foreground); }
+button.terracotta { background: var(--terracotta); border-color: var(--terracotta); color: var(--foreground); }
+button.terracotta:hover { background: #b8472a; border-color: #b8472a; color: var(--foreground); }
+
+/* Board */
+.board {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+.cat-header {
+  background: var(--sand);
+  color: var(--sand-foreground);
+  border-radius: var(--radius);
+  padding: 1rem 0.75rem;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+}
+.tile {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  user-select: none;
+}
+.tile:hover:not(.used) {
+  border-color: var(--primary);
+  box-shadow: 0 8px 24px rgba(212, 105, 42, 0.25);
+  transform: translateY(-2px);
+}
+.tile .points {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  color: var(--primary);
+  letter-spacing: 0.02em;
+}
+.tile.used {
+  background: var(--muted);
+  cursor: not-allowed;
+  border-color: var(--border);
+}
+.tile.used .points { color: var(--muted-foreground); opacity: 0.4; }
+.tile.used:hover { transform: none; box-shadow: none; }
+
+/* Stepped divider (Mesoamerican nod) */
+.divider {
+  height: 14px;
+  margin: 0.5rem 0 1.25rem;
+  background: linear-gradient(90deg, transparent, var(--primary) 20%, var(--primary) 80%, transparent);
+  clip-path: polygon(
+    0 100%, 2% 0, 4% 100%, 6% 0, 8% 100%, 10% 0, 12% 100%, 14% 0, 16% 100%, 18% 0,
+    20% 100%, 22% 0, 24% 100%, 26% 0, 28% 100%, 30% 0, 32% 100%, 34% 0, 36% 100%, 38% 0,
+    40% 100%, 42% 0, 44% 100%, 46% 0, 48% 100%, 50% 0, 52% 100%, 54% 0, 56% 100%, 58% 0,
+    60% 100%, 62% 0, 64% 100%, 66% 0, 68% 100%, 70% 0, 72% 100%, 74% 0, 76% 100%, 78% 0,
+    80% 100%, 82% 0, 84% 100%, 86% 0, 88% 100%, 90% 0, 92% 100%, 94% 0, 96% 100%, 98% 0, 100% 100%
+  );
+  opacity: 0.35;
+}
+
+/* Scoreboard */
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+.team-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left-width: 6px;
+  border-radius: var(--radius);
+  padding: 1.1rem 1.1rem 0.9rem;
+  position: relative;
+  transition: transform 0.1s ease, box-shadow 0.12s ease;
+}
+.team-card[data-idx="0"] { border-left-color: var(--team-1); }
+.team-card[data-idx="1"] { border-left-color: var(--team-2); }
+.team-card[data-idx="2"] { border-left-color: var(--team-3); }
+.team-card[data-idx="3"] { border-left-color: var(--team-4); }
+.team-name {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 1rem;
+  color: var(--foreground);
+  background: transparent;
+  border: 1px dashed transparent;
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin: -2px -6px 0.4rem;
+  width: calc(100% + 12px);
+  outline: none;
+}
+.team-name:hover { border-color: var(--border); }
+.team-name:focus { border-color: var(--primary); border-style: solid; }
+.team-score {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1;
+}
+.team-card[data-idx="0"] .team-score { color: var(--team-1); }
+.team-card[data-idx="1"] .team-score { color: var(--team-2); }
+.team-card[data-idx="2"] .team-score { color: var(--team-3); }
+.team-card[data-idx="3"] .team-score { color: var(--team-4); }
+.team-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.team-actions { display: flex; gap: 0.3rem; }
+.team-actions button {
+  font-size: 0.7rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+}
+
+/* Modal */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: hsla(30, 15%, 8%, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+.overlay.show { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  max-width: 1100px;
+  width: 100%;
+  max-height: 92vh;
+  overflow: auto;
+  position: relative;
+  padding: 2rem 2rem 1.75rem;
+}
+.modal .close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted-foreground);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
+.modal .close:hover { color: var(--foreground); border-color: var(--foreground); }
+
+.point-chip {
+  display: inline-block;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: var(--primary);
+  color: var(--background);
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+.cat-label {
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+.clue {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+  line-height: 1.35;
+  margin: 0.25rem 0 1.5rem;
+  color: var(--foreground);
+}
+.answer {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.2vw, 1.75rem);
+  line-height: 1.4;
+  color: var(--gold);
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  margin: 0 0 1.5rem;
+}
+.answer.hidden { display: none; }
+
+.qhint {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  line-height: 1.4;
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--primary) 8%, var(--card));
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, var(--border));
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  margin: 0.25rem 0 1.25rem;
+  display: block;
+}
+.qhint.hidden { display: none; }
+.qhint-label {
+  display: block;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: var(--primary);
+  margin-bottom: 0.3rem;
+}
+
+.team-chips {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+.chip {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8rem 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.1s ease, border-color 0.12s ease, background 0.12s ease;
+  font-family: 'Oswald', sans-serif;
+}
+.chip[data-idx="0"] { background: color-mix(in srgb, var(--team-1) 12%, var(--card)); }
+.chip[data-idx="1"] { background: color-mix(in srgb, var(--team-2) 12%, var(--card)); }
+.chip[data-idx="2"] { background: color-mix(in srgb, var(--team-3) 12%, var(--card)); }
+.chip[data-idx="3"] { background: color-mix(in srgb, var(--team-4) 12%, var(--card)); }
+.chip:hover { transform: translateY(-1px); }
+.chip[data-idx="0"]:hover, .chip[data-idx="0"].selected { border-color: var(--team-1); }
+.chip[data-idx="1"]:hover, .chip[data-idx="1"].selected { border-color: var(--team-2); }
+.chip[data-idx="2"]:hover, .chip[data-idx="2"].selected { border-color: var(--team-3); }
+.chip[data-idx="3"]:hover, .chip[data-idx="3"].selected { border-color: var(--team-4); }
+.chip.selected { transform: scale(1.03); box-shadow: var(--shadow-lg); }
+.chip .chip-name { text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; font-size: 0.85rem; color: var(--foreground); }
+.chip .chip-score { display: block; font-weight: 700; font-size: 1.5rem; margin-top: 0.25rem; }
+.chip[data-idx="0"] .chip-score { color: var(--team-1); }
+.chip[data-idx="1"] .chip-score { color: var(--team-2); }
+.chip[data-idx="2"] .chip-score { color: var(--team-3); }
+.chip[data-idx="3"] .chip-score { color: var(--team-4); }
+
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+.modal-actions .spacer { flex: 1; }
+.modal-actions .score-actions { display: flex; gap: 0.5rem; }
+
+.hint {
+  color: var(--muted-foreground);
+  font-style: italic;
+  font-size: 0.95rem;
+  margin: 0.5rem 0 1rem;
+}
+
+/* Edit view */
+.edit-wrap { background: var(--sand); color: var(--sand-foreground); border-radius: var(--radius); padding: 1.5rem; }
+.edit-wrap h2 { color: var(--sand-foreground); margin-top: 0; font-size: 1.4rem; }
+.edit-cat {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.edit-cat input.cat-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 1.1rem;
+  width: 100%;
+  background: transparent;
+  border: 1px dashed transparent;
+  border-bottom-color: rgba(0,0,0,0.2);
+  padding: 0.3rem 0.2rem;
+  color: var(--sand-foreground);
+  outline: none;
+  margin-bottom: 0.75rem;
+}
+.edit-cat input.cat-title:focus { border-color: var(--primary); }
+.edit-qs { display: grid; grid-template-columns: 80px 1fr 1fr; gap: 0.5rem 0.75rem; align-items: start; }
+.edit-qs .plbl {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 1.1rem;
+  padding-top: 0.6rem;
+}
+.edit-qs textarea {
+  width: 100%;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--sand-foreground);
+  resize: vertical;
+  min-height: 56px;
+  outline: none;
+}
+.edit-qs textarea:focus { border-color: var(--primary); }
+.edit-qs .ph { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-foreground); margin-bottom: 0.2rem; grid-column: span 1; }
+.edit-header-row { display: contents; }
+.edit-header-row .ph:nth-child(1) { grid-column: 1; }
+.edit-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+.edit-actions button { background: var(--sand-foreground); color: var(--sand); border-color: var(--sand-foreground); }
+.edit-actions button.ghost { background: transparent; color: var(--sand-foreground); border-color: rgba(0,0,0,0.25); }
+
+.hidden { display: none !important; }
+
+@media (max-width: 900px) {
+  .scoreboard { grid-template-columns: repeat(2, 1fr); }
+  .team-chips { grid-template-columns: repeat(2, 1fr); }
+  .edit-qs { grid-template-columns: 60px 1fr; }
+}
+@media (max-width: 640px) {
+  .board { grid-template-columns: repeat(2, 1fr); }
+  .cat-header { min-height: 56px; }
+}
+
+/* ---------- ONE-SCREEN FIT (override) ---------- */
+html, body { height: 100%; }
+body { overflow: hidden; line-height: 1.5; }
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0.85rem 1.1rem 1rem;
+  box-sizing: border-box;
+  gap: 0.5rem;
+}
+.top-bar { margin-bottom: 0; flex-shrink: 0; }
+.brand { font-size: clamp(1.3rem, 2.4vw, 1.8rem); }
+.brand .sub { font-size: 0.55em; }
+.controls button { padding: 0.5rem 0.85rem; font-size: 0.8rem; }
+#board-view { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+#edit-view { flex: 1; min-height: 0; overflow: auto; }
+.board {
+  flex: 1;
+  min-height: 0;
+  grid-template-rows: auto repeat(6, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0;
+}
+.cat-header {
+  min-height: 0;
+  padding: 0.45rem 0.4rem;
+  font-size: clamp(0.7rem, 1vw, 0.95rem);
+  line-height: 1.1;
+}
+.tile {
+  aspect-ratio: auto;
+  min-height: 0;
+}
+.tile .points { font-size: clamp(1.3rem, 2.8vw, 2.25rem); }
+.divider { margin: 0.2rem 0; height: 10px; }
+.scoreboard {
+  flex-shrink: 0;
+  gap: 0.5rem;
+  grid-template-columns: repeat(4, 1fr);
+}
+.team-card { padding: 0.55rem 0.75rem 0.45rem; }
+.team-name { font-size: 0.85rem; margin-bottom: 0.2rem; padding: 1px 4px; }
+.team-score { font-size: clamp(1.5rem, 3vw, 2.25rem); }
+.team-row { gap: 0.35rem; }
+.team-actions { gap: 0.2rem; }
+.team-actions button { font-size: 0.62rem; padding: 0.2rem 0.35rem; line-height: 1; }
+footer { display: none; }
+
+/* Below 900px or in landscape on short screens, let the page scroll again */
+@media (max-width: 900px), (max-height: 640px) {
+  html, body { overflow: auto; height: auto; }
+  .app { height: auto; min-height: 100vh; }
+  .board { grid-template-rows: auto; }
+  .tile { aspect-ratio: 4/3; min-height: 60px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="top-bar">
+    <div class="brand">
+      Book of Mormon
+      <span class="sub">Jeopardy</span>
+    </div>
+    <div class="controls">
+      <button id="btn-answer-key" class="primary" title="Open on your phone — private answer sheet">Answer Key</button>
+      <button id="btn-edit">Edit questions</button>
+      <button id="btn-new">New game</button>
+      <button id="btn-reset">Reset</button>
+      <button id="btn-export">Export</button>
+      <button id="btn-import">Import</button>
+      <input id="file-input" type="file" accept="application/json" hidden />
+    </div>
+  </div>
+
+  <div id="board-view">
+    <div class="board" id="board"></div>
+    <div class="divider"></div>
+    <div class="scoreboard" id="scoreboard"></div>
+  </div>
+
+  <div id="edit-view" class="hidden">
+    <div class="edit-wrap">
+      <h2>Edit categories &amp; questions</h2>
+      <p style="color: var(--muted-foreground); font-style: italic; margin: 0 0 1rem;">Tap any field to edit. Changes save when you click Save.</p>
+      <div id="edit-list"></div>
+      <div class="edit-actions">
+        <button id="edit-save" class="primary">Save</button>
+        <button id="edit-cancel" class="ghost">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Clue modal -->
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="close" id="modal-close" aria-label="Close">&times;</button>
+    <div class="point-chip" id="modal-points">100</div>
+    <div class="cat-label" id="modal-cat">Category</div>
+    <div class="clue" id="modal-clue">Clue goes here.</div>
+    <div class="qhint hidden" id="modal-qhint">
+      <span class="qhint-label">Hint (½ points)</span>
+      <span id="modal-qhint-text"></span>
+    </div>
+    <div class="answer hidden" id="modal-answer"></div>
+    <div class="hint" id="modal-hint">Click the team that buzzed in first.</div>
+    <div class="team-chips" id="modal-chips"></div>
+    <div class="modal-actions">
+      <button id="btn-show-hint">Show hint (½ pts)</button>
+      <button id="btn-show-answer">Show answer</button>
+      <button id="btn-skip">No answer (skip)</button>
+      <div class="spacer"></div>
+      <div class="score-actions hidden" id="score-actions">
+        <button class="jade" id="btn-right">Right <span id="right-pts">+100</span></button>
+        <button class="terracotta" id="btn-wrong">Wrong <span id="wrong-pts">-100</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'bom-jeopardy-state-v3';
+const POINTS = [100, 200, 300, 400, 500, 600];
+
+const DEFAULT_GAME = {
+  categories: [
+    {
+      id: 'cat-1', title: 'People',
+      questions: [
+        { points: 100, clue: "The prophet who went in disguise to confront wicked King Noah and was burned alive for his testimony of Christ.", answer: 'Abinadi (Mosiah 11–17)', hint: "His testimony converted one of King Noah's priests.", used: false },
+        { points: 200, clue: "The son of Jacob who prayed a mighty prayer in the forest all day and into the night, and received a remission of his sins.", answer: 'Enos', hint: "He is Jacob's son and Lehi's grandson. A short book bears his name.", used: false },
+        { points: 300, clue: "The fallen priest of King Noah who believed Abinadi, fled into the wilderness, and baptized believers at the Waters of Mormon.", answer: 'Alma the Elder', hint: "His son of the same name later became the first Nephite chief judge.", used: false },
+        { points: 400, clue: "The anti-Christ in Jacob's day who demanded a sign, was struck down, and confessed his error before he died.", answer: 'Sherem (Jacob 7)', hint: "His name starts with 'S.' His confrontation is in the final chapter of a short book.", used: false },
+        { points: 500, clue: "The anti-Christ in Zarahemla who demanded a sign from Alma, was struck dumb, and was later trampled to death among the Zoramites.", answer: 'Korihor (Alma 30)', hint: "Struck dumb in Alma 30. His name starts with 'K.'", used: false },
+        { points: 600, clue: "Name all four sons of Mosiah who gave up the throne to preach among the Lamanites for fourteen years.", answer: 'Ammon, Aaron, Omner, and Himni', hint: "The most famous converted King Lamoni. The other three names each begin with a vowel.", used: false }
+      ]
+    },
+    {
+      id: 'cat-2', title: 'Places',
+      questions: [
+        { points: 100, clue: "The fruitful land by the sea where Lehi's family camped many years and built their ship.", answer: 'Bountiful', hint: "Named for its much fruit and wild honey (1 Nephi 17:5).", used: false },
+        { points: 200, clue: "The Nephite capital where King Benjamin delivered his farewell sermon from a tower.", answer: 'Zarahemla', hint: "Founded by descendants of Mulek before Mosiah's people arrived. Starts with 'Z.'", used: false },
+        { points: 300, clue: "The hidden fountain and place where Alma the Elder secretly baptized his people as they fled Noah's priests.", answer: 'The Waters of Mormon (place of Mormon)', hint: "Its name later became the name of the prophet-historian who compiled the plates.", used: false },
+        { points: 400, clue: "The wicked Nephite city where Alma and Amulek were imprisoned, and whose prison walls later fell flat as the two men walked free.", answer: 'Ammonihah (Alma 8–16)', hint: "Its people followed 'the order of Nehor.' Destroyed in a single day.", used: false },
+        { points: 500, clue: "The land of the Zoramites where Alma found the people praying by rote from a high tower.", answer: 'Antionum (Alma 31)', hint: "Begins with 'A.' East of Zarahemla, near the seashore.", used: false },
+        { points: 600, clue: "After camping three days in the wilderness, Lehi named a river after one son and a valley after another. Name both.", answer: 'The River Laman and the Valley of Lemuel (1 Nephi 2)', hint: "Lehi hoped these sons would be firm and steadfast like the natural features he named after them.", used: false }
+      ]
+    },
+    {
+      id: 'cat-3', title: 'Doctrine',
+      questions: [
+        { points: 100, clue: 'Complete 2 Nephi 2:25 — "Adam fell that men might be; and men are, that they might have ___."', answer: 'Joy', hint: "Three letters. The purpose of our mortal existence.", used: false },
+        { points: 200, clue: "In Alma 32, the word of God is compared to what, planted in the heart?", answer: 'A seed', hint: "A tiny thing — if good, it swells, sprouts, and grows.", used: false },
+        { points: 300, clue: "Complete 2 Nephi 2:27 — men are free to choose liberty and eternal life, or to choose ___ and ___.", answer: 'Captivity and death', hint: "The opposites of liberty and eternal life.", used: false },
+        { points: 400, clue: 'Complete Mosiah 2:17 — "When ye are in the service of your fellow beings ye are only in the service of your ___."', answer: 'God', hint: "One of the most-quoted verses from King Benjamin's tower sermon.", used: false },
+        { points: 500, clue: 'According to 2 Nephi 9:41, who is the "keeper of the gate" who "employeth no servant there"?', answer: 'The Holy One of Israel (Jesus Christ)', hint: "A title for Christ used often by Jacob and Isaiah throughout 2 Nephi.", used: false },
+        { points: 600, clue: 'Complete Alma 32:21 — "Faith is not to have a perfect knowledge of things; therefore if ye have faith ye ___ for things which are not seen, which are true."', answer: 'Hope', hint: "One of the three Christian virtues alongside faith and charity.", used: false }
+      ]
+    },
+    {
+      id: 'cat-4', title: 'Events',
+      questions: [
+        { points: 100, clue: "What sacred record did Nephi return to Jerusalem to obtain from Laban?", answer: 'The Brass Plates (plates of brass)', hint: "They contained the five books of Moses and the writings of the prophets down to Jeremiah.", used: false },
+        { points: 200, clue: "What object of curious workmanship, with two spindles, did the Lord provide to guide Lehi's family in the wilderness?", answer: 'The Liahona', hint: "It worked 'according to the faith and diligence' of those who used it.", used: false },
+        { points: 300, clue: "Who appeared to Alma the Younger and the sons of Mosiah as they went about trying to destroy the Church, shaking the earth with his voice?", answer: 'An angel of the Lord (Mosiah 27)', hint: "Not a prophet — a heavenly messenger whose voice shook the earth.", used: false },
+        { points: 400, clue: "What was the name of the tall platform Zoramites climbed one at a time to offer their proud, rote prayer?", answer: 'The Rameumptom (Alma 31:21)', hint: "Also called a 'holy stand.' Starts with 'R.'", used: false },
+        { points: 500, clue: "In Mosiah, King Mosiah sent a search party to find Zeniff's descendants lost in the land of Lehi-Nephi. Who led that party and found King Limhi?", answer: 'Ammon, a descendant of Zarahemla (Mosiah 7)', hint: "He shares his name with a famous missionary son of Mosiah — but this is a different person.", used: false },
+        { points: 600, clue: "Approximately how many souls did Alma the Elder baptize at the Waters of Mormon before his people fled into the wilderness?", answer: 'About 204 (Mosiah 18:16)', hint: "A little over two hundred. The exact figure is in Mosiah 18:16.", used: false }
+      ]
+    },
+    {
+      id: 'cat-5', title: 'Faith',
+      questions: [
+        { points: 100, clue: "In Alma 32, Alma compares faith to what, which can be planted in the heart?", answer: 'A seed', hint: "An organic metaphor — tiny, but grows when nourished.", used: false },
+        { points: 200, clue: "According to Alma 32:21, faith is not to have a perfect ___ of things.", answer: 'Knowledge', hint: "If you had this perfectly, you would no longer need faith.", used: false },
+        { points: 300, clue: '1 Nephi 3:7 — "The Lord giveth no commandments unto the children of men, save he shall ___ a way for them that they may accomplish the thing which he commandeth them."', answer: 'Prepare', hint: "Starts with 'P.' To make ready in advance.", used: false },
+        { points: 400, clue: "In Alma 32:28, when the seed of faith is a good seed, it swells, enlarges the soul, enlightens the understanding — and begins to be ___ to the taste.", answer: 'Delicious', hint: "A taste word. Starts with 'D.'", used: false },
+        { points: 500, clue: 'Complete Alma 32:27 — "exercise a ___ of faith, yea, even if ye can no more than desire to believe, let this desire work in you."', answer: 'Particle', hint: "Even a tiny fragment — just this much — is enough to start the experiment.", used: false },
+        { points: 600, clue: "In Alma 7:11–12, why does Alma say Christ will take upon Himself pains, afflictions, temptations, and sicknesses? What will He then know how to do for His people?", answer: 'Succor them (know according to the flesh how to succor his people — Alma 7:12)', hint: "An old English verb meaning 'to help' or 'to relieve in distress.' Starts with 'S.'", used: false }
+      ]
+    },
+    {
+      id: 'cat-6', title: 'Repentance',
+      questions: [
+        { points: 100, clue: "What ordinance did Alma the Elder perform in the Waters of Mormon as the outward sign of his people's repentance?", answer: 'Baptism (Mosiah 18)', hint: "Performed by immersion — a public covenant.", used: false },
+        { points: 200, clue: "In Alma 5:14, Alma asks whether we have experienced a mighty change in what part of us?", answer: 'Our hearts (a mighty change of heart)', hint: "The seat of our desires and affections.", used: false },
+        { points: 300, clue: "This former chief lawyer of Ammonihah accused Alma and Amulek, trembled and repented after their testimony, and was later healed of a burning fever by Alma's faith.", answer: 'Zeezrom (Alma 10–15)', hint: "A lawyer whose name begins with 'Z.'", used: false },
+        { points: 400, clue: "In Mosiah 4:11, King Benjamin says that to retain a remission of your sins from day to day, you must call on the Lord daily and stand ___ in the faith.", answer: 'Steadfastly', hint: "An adverb meaning 'firmly and resolutely.' Starts with 'S.'", used: false },
+        { points: 500, clue: "In Alma 5:14, Alma also asks whether the Saints have received His image in their ___.", answer: 'Countenances', hint: "You see the light of Christ there — on a person's face.", used: false },
+        { points: 600, clue: "In Mosiah 18:9, Alma the Elder names three covenants of baptism besides taking the name of Christ: mourn with those that mourn, comfort those that stand in need of comfort, and ___.", answer: 'Stand as witnesses of God at all times, in all things, and in all places', hint: "The third covenant — public testimony, anywhere and always.", used: false }
+      ]
+    }
+  ],
+  teams: [
+    { id: 't1', name: 'One Direction', score: 0 },
+    { id: 't2', name: "Nephi's Navigators", score: 0 },
+    { id: 't3', name: 'Liahona Legends', score: 0 },
+    { id: 't4', name: 'Mahonri Moriancumer', score: 0 }
+  ]
+};
+
+// --- State ---
+let state = loadState();
+
+function clone(v) { return JSON.parse(JSON.stringify(v)); }
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return clone(DEFAULT_GAME);
+    const parsed = JSON.parse(raw);
+    if (!parsed.categories || !parsed.teams) return clone(DEFAULT_GAME);
+    return parsed;
+  } catch (e) {
+    return clone(DEFAULT_GAME);
+  }
+}
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+// --- Render: board ---
+function renderBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  // Header row
+  state.categories.forEach((c, ci) => {
+    const h = document.createElement('div');
+    h.className = 'cat-header';
+    h.textContent = c.title;
+    board.appendChild(h);
+  });
+  // Tiles row by row (POINTS index)
+  for (let pi = 0; pi < POINTS.length; pi++) {
+    state.categories.forEach((c, ci) => {
+      const q = c.questions[pi];
+      const tile = document.createElement('div');
+      tile.className = 'tile' + (q.used ? ' used' : '');
+      tile.innerHTML = '<div class="points">' + q.points + '</div>';
+      if (!q.used) {
+        tile.addEventListener('click', () => openClue(ci, pi));
+      }
+      board.appendChild(tile);
+    });
+  }
+}
+
+function renderScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = '';
+  state.teams.forEach((t, i) => {
+    const card = document.createElement('div');
+    card.className = 'team-card';
+    card.setAttribute('data-idx', i);
+    card.innerHTML = `
+      <input class="team-name" value="${escapeAttr(t.name)}" data-idx="${i}" />
+      <div class="team-row">
+        <div class="team-score" id="score-${i}">${t.score}</div>
+        <div class="team-actions">
+          <button data-action="minus" data-idx="${i}" title="-100">-100</button>
+          <button data-action="plus" data-idx="${i}" title="+100">+100</button>
+          <button data-action="zero" data-idx="${i}" title="Reset team score">0</button>
+        </div>
+      </div>
+    `;
+    sb.appendChild(card);
+  });
+  sb.querySelectorAll('input.team-name').forEach(inp => {
+    inp.addEventListener('change', (e) => {
+      const i = Number(e.target.getAttribute('data-idx'));
+      state.teams[i].name = e.target.value.trim() || ('Team ' + (i+1));
+      saveState();
+    });
+    inp.addEventListener('blur', () => saveState());
+  });
+  sb.querySelectorAll('button[data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const i = Number(btn.getAttribute('data-idx'));
+      const act = btn.getAttribute('data-action');
+      if (act === 'plus') state.teams[i].score += 100;
+      else if (act === 'minus') state.teams[i].score -= 100;
+      else if (act === 'zero') state.teams[i].score = 0;
+      saveState();
+      renderScoreboard();
+    });
+  });
+}
+
+function escapeAttr(s) { return String(s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+// --- Clue modal ---
+let currentClue = null; // { ci, pi, selectedTeam }
+
+function openClue(ci, pi) {
+  const c = state.categories[ci];
+  const q = c.questions[pi];
+  currentClue = { ci, pi, selectedTeam: null, hintShown: false };
+  document.getElementById('modal-points').textContent = q.points;
+  document.getElementById('modal-cat').textContent = c.title;
+  document.getElementById('modal-clue').textContent = q.clue;
+  const ans = document.getElementById('modal-answer');
+  ans.textContent = q.answer;
+  ans.classList.add('hidden');
+  document.getElementById('btn-show-answer').textContent = 'Show answer';
+  // Hint state
+  const qhint = document.getElementById('modal-qhint');
+  const qhintText = document.getElementById('modal-qhint-text');
+  const btnHint = document.getElementById('btn-show-hint');
+  if (q.hint && q.hint.trim()) {
+    qhintText.textContent = q.hint;
+    qhint.classList.add('hidden');
+    btnHint.classList.remove('hidden');
+    btnHint.disabled = false;
+    btnHint.textContent = 'Show hint (½ pts)';
+  } else {
+    qhint.classList.add('hidden');
+    btnHint.classList.add('hidden');
+  }
+  updatePointsDisplay();
+  document.getElementById('score-actions').classList.add('hidden');
+  document.getElementById('modal-hint').textContent = 'Click the team that buzzed in first.';
+  renderChips();
+  document.getElementById('overlay').classList.add('show');
+}
+
+function effectivePoints() {
+  if (!currentClue) return 0;
+  const q = state.categories[currentClue.ci].questions[currentClue.pi];
+  return currentClue.hintShown ? Math.floor(q.points / 2) : q.points;
+}
+
+function updatePointsDisplay() {
+  const pts = effectivePoints();
+  document.getElementById('right-pts').textContent = '+' + pts;
+  document.getElementById('wrong-pts').textContent = '-' + pts;
+}
+
+function showHint() {
+  if (!currentClue) return;
+  currentClue.hintShown = true;
+  document.getElementById('modal-qhint').classList.remove('hidden');
+  const btn = document.getElementById('btn-show-hint');
+  btn.classList.add('hidden');
+  updatePointsDisplay();
+  if (currentClue.selectedTeam != null) {
+    document.getElementById('modal-hint').textContent = 'Hint shown — award ±' + effectivePoints() + ' (half points).';
+  } else {
+    document.getElementById('modal-hint').textContent = 'Hint shown. The next team to answer wins or loses half points.';
+  }
+}
+
+function renderChips() {
+  const wrap = document.getElementById('modal-chips');
+  wrap.innerHTML = '';
+  state.teams.forEach((t, i) => {
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (currentClue && currentClue.selectedTeam === i ? ' selected' : '');
+    chip.setAttribute('data-idx', i);
+    chip.innerHTML = `<div class="chip-name">${escapeHtml(t.name)}</div><span class="chip-score">${t.score}</span>`;
+    chip.addEventListener('click', () => {
+      currentClue.selectedTeam = i;
+      renderChips();
+      document.getElementById('score-actions').classList.remove('hidden');
+      const pts = effectivePoints();
+      const suffix = currentClue.hintShown ? ' (half points — hint shown).' : '. Wrong keeps the tile open for another team.';
+      document.getElementById('modal-hint').textContent = 'Award +' + pts + ' if right, −' + pts + ' if wrong' + suffix;
+    });
+    wrap.appendChild(chip);
+  });
+}
+
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function closeClue() {
+  document.getElementById('overlay').classList.remove('show');
+  currentClue = null;
+}
+
+function markUsedAndClose() {
+  if (!currentClue) return;
+  const { ci, pi } = currentClue;
+  state.categories[ci].questions[pi].used = true;
+  saveState();
+  renderBoard();
+  closeClue();
+}
+
+function scoreRight() {
+  if (!currentClue || currentClue.selectedTeam == null) return;
+  const q = state.categories[currentClue.ci].questions[currentClue.pi];
+  state.teams[currentClue.selectedTeam].score += q.points;
+  saveState();
+  renderScoreboard();
+  markUsedAndClose();
+}
+
+function scoreWrong() {
+  if (!currentClue || currentClue.selectedTeam == null) return;
+  const q = state.categories[currentClue.ci].questions[currentClue.pi];
+  state.teams[currentClue.selectedTeam].score -= q.points;
+  saveState();
+  renderScoreboard();
+  // Keep modal open; reset selection so another team can try.
+  currentClue.selectedTeam = null;
+  renderChips();
+  document.getElementById('score-actions').classList.add('hidden');
+  document.getElementById('modal-hint').textContent = 'Wrong — pick another team or skip.';
+}
+
+// --- Edit mode ---
+let editDraft = null;
+function openEdit() {
+  editDraft = clone(state.categories);
+  const list = document.getElementById('edit-list');
+  list.innerHTML = '';
+  editDraft.forEach((c, ci) => {
+    const block = document.createElement('div');
+    block.className = 'edit-cat';
+    let rows = `
+      <input class="cat-title" value="${escapeAttr(c.title)}" data-ci="${ci}" placeholder="Category title" />
+      <div class="edit-qs">
+        <div class="ph">Points</div><div class="ph">Clue</div><div class="ph">Answer</div>
+    `;
+    c.questions.forEach((q, qi) => {
+      rows += `
+        <div class="plbl">${q.points}</div>
+        <textarea data-ci="${ci}" data-qi="${qi}" data-field="clue" placeholder="Clue (Jeopardy-style hint)">${escapeHtml(q.clue)}</textarea>
+        <textarea data-ci="${ci}" data-qi="${qi}" data-field="answer" placeholder="Answer">${escapeHtml(q.answer)}</textarea>
+      `;
+    });
+    rows += '</div>';
+    block.innerHTML = rows;
+    list.appendChild(block);
+  });
+  list.querySelectorAll('input.cat-title').forEach(inp => {
+    inp.addEventListener('input', (e) => {
+      const ci = Number(e.target.getAttribute('data-ci'));
+      editDraft[ci].title = e.target.value;
+    });
+  });
+  list.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('input', (e) => {
+      const ci = Number(e.target.getAttribute('data-ci'));
+      const qi = Number(e.target.getAttribute('data-qi'));
+      const f = e.target.getAttribute('data-field');
+      editDraft[ci].questions[qi][f] = e.target.value;
+    });
+  });
+  document.getElementById('board-view').classList.add('hidden');
+  document.getElementById('edit-view').classList.remove('hidden');
+}
+function saveEdit() {
+  if (!editDraft) return;
+  state.categories = editDraft;
+  saveState();
+  editDraft = null;
+  document.getElementById('edit-view').classList.add('hidden');
+  document.getElementById('board-view').classList.remove('hidden');
+  renderBoard();
+}
+function cancelEdit() {
+  editDraft = null;
+  document.getElementById('edit-view').classList.add('hidden');
+  document.getElementById('board-view').classList.remove('hidden');
+}
+
+// --- Top-bar actions ---
+function newGame() {
+  state.categories.forEach(c => c.questions.forEach(q => q.used = false));
+  state.teams.forEach(t => t.score = 0);
+  saveState();
+  renderBoard();
+  renderScoreboard();
+}
+function resetAll() {
+  if (!confirm('Reset everything back to the seeded Book of Mormon questions? Team names, scores, and edits will be lost.')) return;
+  state = clone(DEFAULT_GAME);
+  saveState();
+  renderBoard();
+  renderScoreboard();
+}
+function exportJson() {
+  const data = { categories: state.categories.map(c => ({
+    id: c.id, title: c.title,
+    questions: c.questions.map(q => ({ points: q.points, clue: q.clue, answer: q.answer }))
+  })) };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = new Date();
+  const stamp = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  a.href = url;
+  a.download = 'bom-jeopardy-' + stamp + '.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+}
+function openAnswerKey() {
+  const cats = state.categories.map(cat => {
+    const qs = cat.questions.map(q => {
+      const usedClass = q.used ? ' used' : '';
+      const hintRow = (q.hint && q.hint.trim())
+        ? `<div class="hint-row"><span class="hint-label">Hint</span>${escapeHtml(q.hint)}</div>`
+        : '';
+      return `
+        <div class="q${usedClass}">
+          <div class="row1"><span class="pts">$${q.points}</span>${q.used ? '<span class="played-tag">played</span>' : ''}</div>
+          <div class="clue">${escapeHtml(q.clue)}</div>
+          <div class="ans"><span class="ans-label">Answer</span>${escapeHtml(q.answer)}</div>
+          ${hintRow}
+        </div>`;
+    }).join('');
+    return `<section class="cat"><h2>${escapeHtml(cat.title)}</h2>${qs}</section>`;
+  }).join('');
+
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Book of Mormon Jeopardy — Answer Key</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#18130e;--fg:#ddd0b8;--card:#1f1914;--primary:#d4692a;--gold:#c8981a;--sand:#e6ddd0;--sand-fg:#2a2117;--muted:#8a7d6b;--border:#302821;}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--fg);line-height:1.5;padding:1rem 1.1rem 2.5rem;max-width:900px;margin:0 auto;-webkit-font-smoothing:antialiased}
+h1,h2{font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin:0;line-height:1.15}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:0.5rem;position:sticky;top:0;background:var(--bg);padding:0.75rem 0;border-bottom:1px solid var(--border);margin-bottom:1rem;z-index:10}
+.topbar h1{font-size:clamp(1rem,3.5vw,1.3rem);color:var(--fg)}
+.topbar h1 .accent{color:var(--primary)}
+.actions{display:flex;gap:0.5rem}
+.actions button{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:0.05em;font-size:0.75rem;padding:0.5rem 0.85rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer}
+.actions button.primary{background:var(--primary);border-color:var(--primary);color:var(--bg)}
+.lede{font-style:italic;color:var(--muted);font-size:0.9rem;margin:0.25rem 0 1.25rem}
+.cat{margin:0 0 1.75rem;break-inside:avoid;page-break-inside:avoid}
+.cat h2{background:var(--sand);color:var(--sand-fg);padding:0.5rem 0.75rem;border-radius:8px;font-size:1rem;margin-bottom:0.6rem;letter-spacing:0.06em}
+.q{padding:0.65rem 0.5rem;border-bottom:1px solid var(--border);break-inside:avoid;page-break-inside:avoid}
+.q:last-child{border-bottom:0}
+.q.used{opacity:0.45}
+.q.used .clue{text-decoration:line-through;text-decoration-color:var(--muted)}
+.row1{display:flex;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.15rem}
+.pts{font-family:'Oswald',sans-serif;font-weight:700;color:var(--primary);font-size:1rem;letter-spacing:0.04em}
+.played-tag{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:0.1em;font-size:0.65rem;color:var(--muted);border:1px solid var(--border);padding:0.1rem 0.4rem;border-radius:4px}
+.clue{margin:0.1rem 0 0.4rem;font-size:0.98rem}
+.ans,.hint-row{font-size:0.92rem;margin:0.15rem 0}
+.ans{color:var(--gold);font-style:italic}
+.ans-label,.hint-label{display:inline-block;font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:0.1em;font-size:0.62rem;color:var(--primary);margin-right:0.4rem;font-style:normal;padding:0.08rem 0.35rem;border:1px solid color-mix(in srgb,var(--primary) 50%,transparent);border-radius:4px;vertical-align:middle}
+.hint-row{color:var(--muted);font-style:italic}
+.hint-label{color:var(--muted);border-color:var(--border)}
+.footer-note{margin-top:2rem;font-style:italic;color:var(--muted);font-size:0.82rem;text-align:center;padding-top:1rem;border-top:1px solid var(--border)}
+
+@media (max-width:520px){
+  body{padding:0.75rem 0.8rem 2rem}
+  .topbar{padding:0.6rem 0}
+  .clue{font-size:1rem}
+  .q{padding:0.75rem 0.35rem}
+}
+
+@media print{
+  body{background:#fff;color:#000;max-width:none;padding:0.5in 0.5in 0.5in;line-height:1.35}
+  .topbar{position:static;border-bottom:2px solid #000;background:#fff;margin-bottom:0.35in;padding:0 0 0.15in}
+  .topbar h1,.topbar h1 .accent{color:#000}
+  .lede{color:#555;margin:0.1in 0 0.3in}
+  .no-print{display:none !important}
+  .grid{columns:2;column-gap:0.3in}
+  .cat{margin:0 0 0.2in}
+  .cat h2{background:#eee;color:#000;border:1px solid #bbb;font-size:0.95rem;padding:0.08in 0.15in}
+  .q{border-bottom:1px solid #ccc;padding:0.08in 0.05in}
+  .pts{color:#000;font-size:0.9rem}
+  .played-tag{color:#555;border-color:#999}
+  .ans{color:#333;font-style:italic}
+  .ans-label,.hint-label{color:#000;border-color:#666}
+  .hint-row{color:#555}
+  .q.used{opacity:0.5}
+  .footer-note{border-top-color:#999;color:#555}
+}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>Answer Key <span class="accent">(host only)</span></h1>
+    <div class="actions no-print">
+      <button class="primary" onclick="window.print()">Print</button>
+      <button onclick="window.close()">Close</button>
+    </div>
+  </div>
+  <p class="lede">Keep this open on your phone while you host. Everything projected to the TV stays blind — this view is yours alone.</p>
+  <div class="grid">${cats}</div>
+  <div class="footer-note">Generated ${new Date().toLocaleString()} · Book of Mormon Jeopardy</div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if (!win) {
+    alert('Your browser blocked the new tab. Allow pop-ups for this page and try again.');
+  }
+  // Revoke URL after 2 minutes — long enough for the new tab to load
+  setTimeout(() => URL.revokeObjectURL(url), 120000);
+}
+
+function importJson(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!data.categories || !Array.isArray(data.categories)) throw new Error('Missing categories');
+      if (!confirm('Import will replace your current categories and questions (team names and scores stay). Continue?')) return;
+      state.categories = data.categories.map((c, ci) => ({
+        id: c.id || ('cat-' + (ci+1)),
+        title: c.title || 'Category ' + (ci+1),
+        questions: (c.questions || []).slice(0, 6).map((q, qi) => ({
+          points: POINTS[qi] || (100 * (qi+1)),
+          clue: q.clue || '',
+          answer: q.answer || '',
+          used: false
+        }))
+      }));
+      saveState();
+      renderBoard();
+    } catch (e) {
+      alert('Import failed: ' + e.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// --- Wire up ---
+document.getElementById('btn-edit').addEventListener('click', openEdit);
+document.getElementById('edit-save').addEventListener('click', saveEdit);
+document.getElementById('edit-cancel').addEventListener('click', cancelEdit);
+document.getElementById('btn-new').addEventListener('click', () => {
+  if (confirm('Start a new game? Scores and tile-used state will clear (questions stay).')) newGame();
+});
+document.getElementById('btn-reset').addEventListener('click', resetAll);
+document.getElementById('btn-export').addEventListener('click', exportJson);
+document.getElementById('btn-answer-key').addEventListener('click', openAnswerKey);
+document.getElementById('btn-import').addEventListener('click', () => document.getElementById('file-input').click());
+document.getElementById('file-input').addEventListener('change', (e) => {
+  if (e.target.files && e.target.files[0]) importJson(e.target.files[0]);
+  e.target.value = '';
+});
+document.getElementById('modal-close').addEventListener('click', closeClue);
+document.getElementById('overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeClue();
+});
+document.getElementById('btn-show-answer').addEventListener('click', () => {
+  const ans = document.getElementById('modal-answer');
+  const btn = document.getElementById('btn-show-answer');
+  if (ans.classList.contains('hidden')) {
+    ans.classList.remove('hidden');
+    btn.textContent = 'Hide answer';
+  } else {
+    ans.classList.add('hidden');
+    btn.textContent = 'Show answer';
+  }
+});
+document.getElementById('btn-skip').addEventListener('click', markUsedAndClose);
+document.getElementById('btn-right').addEventListener('click', scoreRight);
+document.getElementById('btn-wrong').addEventListener('click', scoreWrong);
+document.getElementById('btn-show-hint').addEventListener('click', showHint);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeClue();
+});
+
+// --- Initial paint ---
+renderBoard();
+renderScoreboard();
+</script>
+</body>
+</html>
